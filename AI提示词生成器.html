@@ -1,0 +1,739 @@
+﻿<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>鞭策 AI 器</title>
+  <style>
+    :root{
+      --bg: #0f1226;
+      --bg2: #101427;
+      --card: rgba(255,255,255,0.07);
+      --card-strong: rgba(255,255,255,0.12);
+      --text: #e8eaf2;
+      --muted: #a7acc0;
+      --primary: #6dd5fa;
+      --primary-2: #3a7bd5;
+      --success: #34d399;
+      --warn: #f59e0b;
+      --danger: #ef4444;
+      --shadow: 0 10px 30px rgba(0,0,0,0.35);
+      --radius: 14px;
+      /* Scrollbar theme */
+      --scrollbar-size: 10px;
+      --scrollbar-track: transparent;
+      --scrollbar-thumb: rgba(255,255,255,0.35);
+      --scrollbar-thumb-hover: rgba(255,255,255,0.50);
+      --scrollbar-thumb-active: rgba(255,255,255,0.65);
+    }
+    *{box-sizing:border-box}
+    /* Ensure background covers full page without seams */
+    html,body{min-height:100%}
+    body{
+      margin:0; color:var(--text); background: radial-gradient(1200px 600px at 20% -10%, #1e2344, transparent),
+      radial-gradient(900px 500px at 100% 0%, #202750, transparent), linear-gradient(180deg, var(--bg), var(--bg2));
+      /* Prevent any perceived banding by keeping layers pinned and non-repeating */
+      background-attachment: scroll, scroll, scroll;
+      background-repeat: no-repeat, no-repeat, no-repeat;
+      font: 14px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Helvetica Neue", Arial, "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+    }
+    /* Vertical layout improvements */
+    .app{max-width: 980px; margin: 48px auto; padding: 0 20px; display:flex; flex-direction:column; gap:16px}
+    header{
+      display:flex; align-items:center; justify-content:space-between; margin: 0;
+    }
+    .brand{display:flex; gap:12px; align-items:center}
+    .logo{width:44px; height:44px; display:block; color: var(--primary)}
+    /* gear icon uses currentColor */
+    .logo path{fill: currentColor}
+    h1{font-size:20px; margin:0}
+    .muted{color:var(--muted)}
+
+    .card{background: var(--card); border:1px solid rgba(255,255,255,0.08); border-radius: var(--radius); box-shadow: var(--shadow); backdrop-filter: saturate(140%) blur(10px)}
+
+    .composer{padding:16px; display:grid; gap:12px; position:relative; z-index:1000; overflow:visible;}
+    .row{display:flex; gap:12px; align-items:center}
+    textarea{
+      width:100%; min-height:72px; resize: vertical; border-radius: 10px; border:1px solid rgba(255,255,255,0.15);
+      padding:12px 12px 28px; color:var(--text); background: rgba(255,255,255,0.04); outline:none; transition:.15s border-color;
+    }
+    /* Increase spacing below the main input by 5px */
+    #text { margin-bottom: 5px; }
+    textarea:focus{border-color: var(--primary)}
+    .meta{display:flex; justify-content:space-between; align-items:center; margin-top:-8px; padding:0}
+    .counter{font-size:12px; color:var(--muted)}
+
+    select, input[type="text"]{
+      height:40px; padding:0 12px; border-radius: 10px; border:1px solid rgba(255,255,255,0.15);
+      color:var(--text); background: rgba(255,255,255,0.04); outline:none; transition:.15s border-color;
+    }
+    select:focus, input[type="text"]:focus{border-color: var(--primary)}
+
+    .btn{height:40px; padding:0 14px; border-radius: 10px; border:1px solid rgba(255,255,255,0.1); color:#0b1220; background: linear-gradient(135deg, var(--primary), var(--primary-2)); font-weight:600; cursor:pointer; box-shadow: var(--shadow);}
+    .btn[disabled]{opacity:.6; cursor:not-allowed}
+    .btn.ghost{background: transparent; color: var(--text)}
+
+    .toolbar{margin:0; padding:10px 12px; display:flex; gap:10px; align-items:center; flex-wrap:wrap}
+    .spacer{flex:1}
+    .stat{font-size:12px; color:var(--muted)}
+
+    .list{margin:0; display:grid; gap:10px}
+    .item{display:grid; grid-template-columns:auto max-content; gap:10px; padding:12px; border-radius: 12px; border:1px solid rgba(255,255,255,0.08); background: rgba(255,255,255,0.04)}
+    .item.done{opacity:.7}
+    .item .content{white-space:normal; display:-webkit-box; -webkit-line-clamp:4; -webkit-box-orient:vertical; overflow:hidden}
+    .chip{display:inline-flex; align-items:center; gap:6px; height:24px; padding:0 8px; border-radius:999px; font-size:12px; border:1px solid rgba(255,255,255,0.12)}
+    .chip.low{color:#7dd3fc; background: rgba(125,211,252,0.1)}
+    .chip.medium{color:#fbbf24; background: rgba(251,191,36,0.08)}
+    .chip.high{color:#f87171; background: rgba(248,113,113,0.08)}
+
+    /* files sublist */
+    .files{display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-top:8px}
+    .files .file-input{height:28px; padding:0 8px; border-radius:8px; border:1px solid rgba(255,255,255,0.15); color:var(--text); background: rgba(255,255,255,0.04); outline:none}
+    .files .file-input:focus{border-color: var(--primary)}
+    .chip.file{height:22px; padding:0 6px; border-color: rgba(255,255,255,0.18); background: rgba(255,255,255,0.05)}
+    .chip.file .remove-file{margin-left:6px; width:16px; height:16px; display:inline-flex; align-items:center; justify-content:center; line-height:1; font-size:12px; text-align:center; border-radius:50%; border:1px solid rgba(255,255,255,0.2); background: transparent; color: var(--muted); cursor:pointer}
+    .chip.file .remove-file:hover{color: var(--text); border-color: rgba(255,255,255,0.35)}
+
+    .actions{display:flex; align-items:center; gap:6px}
+    .icon-btn{height:36px; width:36px; display:grid; place-items:center; border-radius:10px; border:1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.02); color:var(--text); cursor:pointer}
+    .icon-btn:hover{background: rgba(255,255,255,0.06)}
+    .icon{width:18px; height:18px; display:block}
+
+    .search{min-width:220px}
+    .empty{padding:24px; text-align:center; color:var(--muted)}
+
+    @media (max-width: 680px){
+      .row{flex-direction:column; align-items:stretch}
+      .spacer{display:none}
+    }
+    /* dropdown blur enhancement */
+    .dropdown-menu{
+      background: #101427;
+      border: 1px solid rgba(255,255,255,0.18);
+    }
+    .dropdown-menu [role="option"]:hover{ background: rgba(255,255,255,0.12); }
+    /* preview layout */
+    .main{ display:grid; grid-template-columns: 1fr 380px; gap:16px; align-items:start; margin-top:0; min-height:0; }
+    .left-col{ min-width:0 }
+    .preview{ padding:12px; position:sticky; top:16px }
+    .preview-header{ font-weight:600; margin-bottom:8px; color:var(--muted) }
+    .preview-body{ margin:0; max-height: 50vh; overflow:auto; padding:12px; border-radius:10px; background: rgba(0,0,0,0.18); border:1px solid rgba(255,255,255,0.08); color:var(--text); font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace; font-size:12px; line-height:1.6 }
+    .preview-actions{ display:flex; justify-content:flex-end; margin-top:10px }
+    @media (max-width: 980px){ .main{ grid-template-columns: 1fr } .preview{ position:static } }
+    @media (min-width: 1200px){
+      .app{ max-width: 1280px; }
+      .main{ grid-template-columns: 1.15fr 420px; gap:20px }
+      .preview{ top:20px }
+      .preview-body{ max-height: 60vh }
+    }
+
+    /* Scrollbar: consistent, contrast-safe, no layout shift */
+    html{
+      overflow-y: auto;
+      /* Hint UAs to render dark UI (affects native scrollbars in some browsers) */
+      color-scheme: dark;
+    }
+    html, body{ overflow-x:hidden; }
+    /* Firefox */
+    html, body, textarea, .preview-body{
+      scrollbar-width: thin;
+      scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+    }
+    /* WebKit-based browsers (Chrome/Edge/Safari) */
+    ::-webkit-scrollbar{ width: var(--scrollbar-size); height: var(--scrollbar-size); }
+    ::-webkit-scrollbar-track{ background: var(--scrollbar-track); }
+    ::-webkit-scrollbar-thumb{
+      border-radius: 999px;
+      /* Use background-clip + transparent border for visually thinner pill */
+      background-clip: padding-box;
+      border: 3px solid transparent;
+      background-color: var(--scrollbar-thumb);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.30), inset 0 0 0 1px rgba(255,255,255,0.08);
+    }
+    ::-webkit-scrollbar-thumb:hover{ background-color: var(--scrollbar-thumb-hover); }
+    ::-webkit-scrollbar-thumb:active{ background-color: var(--scrollbar-thumb-active); }
+    ::-webkit-scrollbar-corner{ background: transparent; }
+    /* High contrast/forced colors: fall back to system defaults for accessibility */
+    @media (forced-colors: active){
+      *{ scrollbar-color: auto !important; }
+      ::-webkit-scrollbar, ::-webkit-scrollbar-thumb, ::-webkit-scrollbar-track{ all: revert; }
+    }
+  /* drag and drop visuals */
+  .item.dragging{opacity:.5}
+  .item.drop-before{box-shadow: inset 0 2px 0 0 var(--primary)}
+  .item.drop-after{box-shadow: inset 0 -2px 0 0 var(--primary)}
+  .item[draggable="true"]{cursor:grab}
+  .item[draggable="true"]:active{cursor:grabbing}
+</style>
+</head>
+<body>
+  <div class="app">
+    <header>
+      <div class="brand">
+        <svg class="logo" viewBox="0 0 1024 1024" aria-label="设置" role="img">
+          <path d="M383.653333 961.18a52.986667 52.986667 0 0 1-16.353333-2.586667 467.833333 467.833333 0 0 1-68.353333-28.3c-24.76-12.666667-35.713333-42.513333-24.92-68a85.333333 85.333333 0 0 0-112-111.84 52.36 52.36 0 0 1-20.5 4.166667 53.48 53.48 0 0 1-47.54-29A467.393333 467.393333 0 0 1 65.6 657.333333c-8.613333-26.48 4.753333-55.38 30.433333-65.786666a85.333333 85.333333 0 0 0-0.14-158.286667C70.2 422.866667 56.78 394 65.333333 367.5a467.726667 467.726667 0 0 1 28.286667-68.413333 52.886667 52.886667 0 0 1 29.333333-25.82 53.446667 53.446667 0 0 1 38.893334 1.013333 84.973333 84.973333 0 0 0 33.02 6.62 85.333333 85.333333 0 0 0 78.533333-118.753333c-10.833333-25.48 0.06-55.373333 24.8-68.053334a467.12 467.12 0 0 1 68.333333-28.44c26.46-8.62 55.333333 4.726667 65.753334 30.393334A85.04 85.04 0 0 0 511.4 149.333333h0.14a85.013333 85.013333 0 0 0 79.046667-53.473333c10.346667-25.7 39.213333-39.133333 65.713333-30.58A467.686667 467.686667 0 0 1 724.666667 93.513333c24.773333 12.613333 35.746667 42.48 24.98 68A85.386667 85.386667 0 0 0 861.54 273.333333a53.333333 53.333333 0 0 1 68.246667 24.626667 468.593333 468.593333 0 0 1 28.486666 68.34c8.666667 26.473333-4.706667 55.38-30.373333 65.813333A84.993333 84.993333 0 0 0 874.666667 511.333333v0.666667a85.006667 85.006667 0 0 0 53.333333 79.146667c25.693333 10.38 39.086667 39.266667 30.493333 65.753333a468 468 0 0 1-28.326666 68.333333c-12.666667 24.76-42.526667 35.693333-68 24.893334a85.013333 85.013333 0 0 0-93.4 18l-0.28 0.28a85.006667 85.006667 0 0 0-18.213334 93.68c10.813333 25.493333-0.106667 55.373333-24.86 68.033333a468.153333 468.153333 0 0 1-68.326666 28.366667c-26.486667 8.606667-55.373333-4.78-65.766667-30.466667a85.02 85.02 0 0 0-79.133333-53.333333h-0.04a85.006667 85.006667 0 0 0-79.12 53.406666c-8.24 20.42-28.213333 33.086667-49.373334 33.086667zM195.333333 700.986667a129.133333 129.133333 0 0 1 23.466667 2.153333A128.033333 128.033333 0 0 1 313.333333 878.913333a10.513333 10.513333 0 0 0 5.02 13.373334 424.813333 424.813333 0 0 0 62.086667 25.713333 10.533333 10.533333 0 0 0 13.04-5.9 128 128 0 0 1 118.666667-80.1h0.06a128 128 0 0 1 118.666666 80 10.533333 10.533333 0 0 0 13.04 5.893333 425.1 425.1 0 0 0 62.073334-25.773333 10.533333 10.533333 0 0 0 5.013333-13.386667 128.04 128.04 0 0 1 27-140.173333l0.34-0.34a128 128 0 0 1 140.493333-27.38 10.52 10.52 0 0 0 13.38-5.013333 425.093333 425.093333 0 0 0 25.74-62.086667 10.533333 10.533333 0 0 0-5.893333-13.04A128 128 0 0 1 832 512v-0.613333a128 128 0 0 1 79.84-118.806667 10.52 10.52 0 0 0 5.866667-13.046667 425.046667 425.046667 0 0 0-25.88-62.086666 10.666667 10.666667 0 0 0-13.673334-4.813334 128.04 128.04 0 0 1-167.8-167.726666 10.526667 10.526667 0 0 0-5.02-13.373334 425.873333 425.873333 0 0 0-62.126666-25.653333 10.54 10.54 0 0 0-13.033334 5.92 127.893333 127.893333 0 0 1-46.22 57.666667A127.273333 127.273333 0 0 1 511.566667 192h-0.166667a128 128 0 0 1-118.666667-79.92 10.5 10.5 0 0 0-13.006666-5.86 425.2 425.2 0 0 0-62.08 25.84 10.526667 10.526667 0 0 0-5 13.393333 128 128 0 0 1-117.76 178.113334h-0.033334A127.44 127.44 0 0 1 145.333333 313.626667a10.726667 10.726667 0 0 0-13.7 4.84 425.093333 425.093333 0 0 0-25.706666 62.153333 10.526667 10.526667 0 0 0 5.913333 13.033333A128 128 0 0 1 192 512.286667a127.28 127.28 0 0 1-22.373333 72.426666 127.88 127.88 0 0 1-57.566667 46.34 10.533333 10.533333 0 0 0-5.886667 13.046667 425.153333 425.153333 0 0 0 25.8 62.066667 10.533333 10.533333 0 0 0 13.386667 5.006666 127.693333 127.693333 0 0 1 49.973333-10.186666zM512 640c-70.58 0-128-57.42-128-128s57.42-128 128-128 128 57.42 128 128-57.42 128-128 128z m0-213.333333a85.333333 85.333333 0 1 0 85.333333 85.333333 85.426667 85.426667 0 0 0-85.333333-85.333333z" fill="currentColor"></path>
+        </svg>
+        <div>
+          <h1>鞭策 AI 器</h1>
+          <div class="muted">逐条录入、整理与导出你的产品/开发需求</div>
+        </div>
+      </div>
+      <div class="stat" id="stats">0 项需求</div>
+    </header>
+
+    <section class="card composer" aria-label="新增需求">
+      <textarea id="text" placeholder="填写清晰、可执行的需求描述。支持多行。Ctrl/⌘+Enter 快速添加。" data-testid="input"></textarea>
+      <div class="meta">
+        <div class="row" style="gap:8px">
+          <select id="priority" aria-label="优先级">
+            <option value="medium">优先级：中</option>
+            <option value="high">优先级：高</option>
+            <option value="low">优先级：低</option>
+          </select>
+          <input id="tag" class="search" type="text" placeholder="标签（可选，如：UI、API）" />
+        </div>
+        <div class="row" style="gap:8px">
+          <span class="counter" id="counter">0 字</span>
+          <button class="btn" id="add">添加需求</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="card toolbar">
+      <input id="q" class="search" type="text" placeholder="搜索（内容/标签）" />
+      <div class="spacer"></div>
+            <button class="btn ghost" id="exportMd">导出 Markdown</button>
+      <button class="btn ghost" id="copyMd">复制 Markdown</button>
+                  <button class="btn ghost" id="clearDone">清除已完成</button>
+    </section>
+
+    <section class="main">
+      <div class="left-col">
+        <section class="list" id="list" aria-live="polite"></section>
+        <div class="empty" id="empty">暂无需求，先在上方输入并点击“添加需求”。</div>
+      </div>
+      <section class="card preview" id="preview">
+        <div class="preview-header">Markdown 预览</div>
+        <pre id="mdPreview" class="preview-body" aria-label="Markdown 预览内容"></pre>
+        <div class="preview-actions">
+          <button class="btn ghost" id="copyPreview">复制预览</button>
+        </div>
+      </section>
+    </section>
+  </div>
+
+  <template id="tpl">
+    <article class="item" data-id="" draggable="true">
+      <div>
+        <div class="row" style="justify-content:space-between">
+          <div class="row" style="gap:8px">
+            <span class="chip medium" data-chip></span>
+            <span class="chip" data-tags></span>
+          </div>
+          <label class="row" style="gap:6px; font-size:13px; color:var(--muted)"><input type="checkbox" data-done /> 完成</label>
+        </div>
+        <div class="content" data-content style="margin-top:8px"></div>
+        <div class="files" data-files>
+          <div class="files-list" data-files-list></div>
+          <input class="file-input" type="text" data-file-input placeholder="涉及文件：回车添加" />
+        </div>
+      </div>
+      <div class="actions">
+        <button class="icon-btn" title="置顶" data-top>&#9195;</button>
+        <button class="icon-btn" title="置底" data-bottom>&#9196;</button>
+        <button class="icon-btn" title="编辑" data-edit>
+          <svg class="icon" viewBox="0 0 24 24" fill="currentColor"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1.003 1.003 0 0 0 0-1.42l-2.34-2.34a1.003 1.003 0 0 0-1.42 0l-1.83 1.83 3.75 3.75 1.84-1.82z"/></svg>
+        </button>
+        <button class="icon-btn" title="删除" data-del>
+          <svg class="icon" viewBox="0 0 24 24" fill="currentColor"><path d="M6 7h12v2H6zm2 3h8l-1 9H9L8 10zM9 4h6v2H9z"/></svg>
+        </button>
+      </div>
+    </article>
+  </template>
+
+  <script>
+    const $ = (s, el=document) => el.querySelector(s);
+    const $$ = (s, el=document) => Array.from(el.querySelectorAll(s));
+
+    const storageKey = 'requirements:v1';
+    const state = { items: [] };
+
+    function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,8); }
+
+    function load(){
+      try{
+        const raw = localStorage.getItem(storageKey);
+        state.items = raw ? JSON.parse(raw) : [];
+      }catch(e){
+        console.warn('读取本地数据失败', e); state.items = [];
+      }
+    }
+    function save(){
+      localStorage.setItem(storageKey, JSON.stringify(state.items));
+    }
+
+    function stats(){
+      const total = state.items.length;
+      const done = state.items.filter(i=>i.done).length;
+      $('#stats').textContent = `${total} 项需求 · 已完成 ${done}`;
+    }
+
+    function chipText(p){
+      return p==='high' ? '高优先级' : p==='low' ? '低优先级' : '中优先级';
+    }
+
+    function render(){
+      const q = $('#q').value.trim().toLowerCase();
+      const list = $('#list');
+      list.innerHTML = '';
+      const filtered = state.items.filter(i => {
+        if(!q) return true;
+        const inText = i.text.toLowerCase().includes(q);
+        const inTag = (i.tag||'').toLowerCase().includes(q);
+        const inFiles = (i.files||[]).some(f => String(f||'').toLowerCase().includes(q));
+        return inText || inTag || inFiles;
+      });
+      $('#empty').style.display = filtered.length ? 'none' : 'block';
+      filtered.forEach((item, idx) => {
+        const tpl = $('#tpl').content.cloneNode(true);
+        const el = tpl.querySelector('.item');
+        el.dataset.id = item.id;
+        if(item.done) el.classList.add('done');
+        const chip = tpl.querySelector('[data-chip]');
+        chip.textContent = chipText(item.priority);
+        chip.classList.remove('low','medium','high');
+        chip.classList.add(item.priority);
+        const tag = tpl.querySelector('[data-tags]');
+        tag.textContent = item.tag ? `#${item.tag}` : '#未标记';
+        const content = tpl.querySelector('[data-content]');
+        content.textContent = item.text;
+        content.title = '双击编辑';
+        // files sublist render
+        item.files = Array.isArray(item.files) ? item.files : [];
+        const filesList = tpl.querySelector('[data-files-list]');
+        const fileInput = tpl.querySelector('[data-file-input]');
+        if(filesList){
+          filesList.innerHTML = '';
+          item.files.forEach((f) => {
+            const chip = document.createElement('span');
+            chip.className = 'chip file';
+            chip.title = f;
+            chip.textContent = f;
+            const rm = document.createElement('button');
+            rm.type = 'button';
+            rm.className = 'remove-file';
+            rm.textContent = '×';
+            rm.title = '移除';
+            rm.addEventListener('click', () => {
+              item.files = (item.files||[]).filter(x => x !== f);
+              save(); render();
+            });
+            chip.appendChild(rm);
+            filesList.appendChild(chip);
+          });
+        }
+        if(fileInput){
+          fileInput.addEventListener('keydown', (e) => {
+            if(e.key === 'Enter'){
+              e.preventDefault();
+              const v = fileInput.value.trim();
+              if(!v) return;
+              item.files = item.files || [];
+              if(!item.files.includes(v)) item.files.push(v);
+              fileInput.value = '';
+              save(); render();
+            }
+          });
+        }
+        const done = tpl.querySelector('[data-done]');
+        done.checked = !!item.done;
+        done.addEventListener('change', () => { item.done = done.checked; save(); render(); });
+        tpl.querySelector('[data-edit]').addEventListener('click', () => editItem(item.id));
+        content.addEventListener('dblclick', () => editItem(item.id));
+        tpl.querySelector('[data-del]').addEventListener('click', () => delItem(item.id));
+        
+        const topBtn = tpl.querySelector('[data-top]');
+        if(topBtn) topBtn.addEventListener('click', () => moveTo(item.id, 0));
+        const bottomBtn = tpl.querySelector('[data-bottom]');
+        if(bottomBtn) bottomBtn.addEventListener('click', () => moveTo(item.id, state.items.length - 1));
+        list.appendChild(tpl);
+      });
+      stats();
+      updatePreview();
+    }
+
+    function add(){
+      const text = $('#text').value.trim();
+      if(!text) return;
+      const priority = getPriority();
+      const tag = $('#tag').value.trim();
+      state.items.push({ id: uid(), text, priority, tag, createdAt: Date.now(), done:false, files: [] });
+      $('#text').value = '';
+      $('#tag').value = '';
+      updateCounter();
+      save();
+      render();
+      $('#text').focus();
+    }
+
+    function delItem(id){
+      state.items = state.items.filter(i => i.id !== id);
+      save(); render();
+    }
+
+    
+    function moveTo(id, newIndex){
+      const i = state.items.findIndex(x=>x.id===id);
+      if(i<0) return;
+      const n = state.items.length;
+      newIndex = Math.max(0, Math.min(n-1, Number(newIndex)||0));
+      const [item] = state.items.splice(i,1);
+      state.items.splice(newIndex,0,item);
+      save(); render();
+    }
+    function editItem(id){
+      const idx = state.items.findIndex(x=>x.id===id);
+      if(idx<0) return;
+      const current = state.items[idx];
+      const text = prompt('编辑需求内容：', current.text);
+      if(text==null) return;
+      const t = text.trim();
+      if(!t){ alert('内容不能为空'); return; }
+      current.text = t; save(); render();
+    }
+
+    
+
+
+    function clearDone(){
+      state.items = state.items.filter(i=>!i.done); save(); render();
+    }
+
+    function updateCounter(){
+      const n = $('#text').value.length; $('#counter').textContent = `${n} 字`;
+    }
+
+    // wire up
+    $('#add').addEventListener('click', add);
+    $('#text').addEventListener('input', updateCounter);
+    $('#text').addEventListener('keydown', (e)=>{
+      if((e.ctrlKey||e.metaKey) && e.key==='Enter'){ add(); }
+    });
+    $('#q').addEventListener('input', render);
+    $('#clearDone').addEventListener('click', clearDone);
+    document.getElementById('exportMd').addEventListener('click', exportMarkdown);
+    document.getElementById('copyMd').addEventListener('click', async ()=>{ await copyText(toMarkdown(state.items)); flash('#copyMd'); });
+    document.getElementById('copyPreview').addEventListener('click', async ()=>{ await copyText(document.getElementById('mdPreview')?.textContent || ''); flash('#copyPreview'); });
+    // drag & drop (container-level) to reorder items
+    (function listDragInit(){
+      const listEl = document.getElementById('list');
+      if(!listEl) return;
+      let dragId = '';
+      listEl.addEventListener('dragstart', (e)=>{
+        const el = e.target && e.target.closest ? e.target.closest('.item') : null;
+        dragId = el ? (el.getAttribute('data-id')||'') : '';
+        if(el) el.classList.add('dragging');
+        try{ if(e.dataTransfer){ e.dataTransfer.effectAllowed='move'; } }catch(_){ }
+      });
+      listEl.addEventListener('dragover', (e)=>{
+        e.preventDefault();
+        const el = e.target && e.target.closest ? e.target.closest('.item') : null;
+        listEl.querySelectorAll('.item.drop-before,.item.drop-after').forEach(x=>x.classList.remove('drop-before','drop-after'));
+        if(!el) return;
+        const rect = el.getBoundingClientRect();
+        const before = (e.clientY - rect.top) < rect.height/2;
+        el.classList.toggle('drop-before', before);
+        el.classList.toggle('drop-after', !before);
+        try{ if(e.dataTransfer){ e.dataTransfer.dropEffect='move'; } }catch(_){ }
+      });
+      listEl.addEventListener('dragleave', (e)=>{
+        const el = e.target && e.target.closest ? e.target.closest('.item') : null;
+        if(el) el.classList.remove('drop-before','drop-after');
+      });
+      listEl.addEventListener('drop', (e)=>{
+        e.preventDefault();
+        const target = e.target && e.target.closest ? e.target.closest('.item') : null;
+        const targetId = target ? (target.getAttribute('data-id')||'') : '';
+        const from = state.items.findIndex(x=>x.id===dragId);
+        if(from < 0) return;
+        if(!targetId){ moveTo(dragId, state.items.length - 1); dragId=''; return; }
+        const to = state.items.findIndex(x=>x.id===targetId);
+        if(to < 0) return;
+        const rect = target.getBoundingClientRect();
+        const before = (e.clientY - rect.top) < rect.height/2;
+        let newIndex = to + (before ? 0 : 1);
+        if(from < newIndex) newIndex--;
+        if(newIndex === from) return;
+        const [moved] = state.items.splice(from,1);
+        state.items.splice(newIndex,0,moved);
+        save(); render();
+        dragId='';
+      });
+      listEl.addEventListener('dragend', ()=>{
+        listEl.querySelectorAll('.item.drop-before,.item.drop-after').forEach(x=>x.classList.remove('drop-before','drop-after'));
+        listEl.querySelectorAll('.item.dragging').forEach(x=>x.classList.remove('dragging'));
+        dragId='';
+      });
+    })();
+        // markdown + clipboard helpers
+    function escapeMd(s){ return String(s).replace(/[\\`*_\[\]<>|]/g, '\\$&'); }
+    function toMarkdown(items){
+      const total = items.length; const done = items.filter(i=>i.done).length;
+      const header = `# 需求清单\n\n完成下方的任务，完成后按照每个任务给我列出几条我可以改进的内容方案供我选择\n\n共 ${total} 条 · 已完成 ${done}\n\n`;
+      const lines = items.map(i => {
+        const box = i.done ? 'x' : ' ';
+        const pri = i.priority==='high'?'[高]':i.priority==='low'?'[低]':'[中]';
+        const tag = i.tag ? ` #${escapeMd(i.tag)}` : '';
+        return `- [${box}] ${escapeMd(i.text)}${tag} ${pri}`;
+      });
+      return header + lines.join('\n') + '\n';
+    }
+    function updatePreview(){
+      const el = document.getElementById("mdPreview");
+      if(!el) return;
+      el.textContent = toMarkdown(state.items);
+    }
+
+    async function copyText(text){
+      try{ await navigator.clipboard.writeText(text); }
+      catch(e){
+        const ta = document.createElement('textarea'); ta.value = text; ta.style.position='fixed'; ta.style.opacity='0'; document.body.appendChild(ta); ta.select();
+        try{ document.execCommand('copy'); } finally { document.body.removeChild(ta); }
+      }
+    }
+
+    function flash(sel, msg='已复制'){
+      const b = document.querySelector(sel); if(!b) return; const t = b.textContent; b.textContent = msg; b.disabled = true;
+      setTimeout(()=>{ b.textContent = t; b.disabled=false; }, 1200);
+    }
+
+    function exportMarkdown(){
+      const md = toMarkdown(state.items);
+      const blob = new Blob([md], {type:'text/markdown;charset=utf-8'});
+      const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'requirements.md'; a.click(); URL.revokeObjectURL(a.href);
+    }    load(); render(); updateCounter();
+  (function(){
+  function injectCss(css){ var s=document.createElement('style'); s.textContent=css; document.head.appendChild(s); }
+  var css = ".dropdown{position:relative;display:inline-block;} .dropdown-toggle{min-width:160px;height:40px;padding:0 36px 0 12px;border-radius:10px;border:1px solid rgba(255,255,255,0.15);color:var(--text);background: rgba(255,255,255,0.04);display:flex;align-items:center;justify-content:space-between;cursor:pointer;outline:none;position:relative;} .dropdown-toggle:focus{border-color: var(--primary);} .dropdown-toggle::after{content:'';position:absolute;right:12px;top:50%;transform:translateY(-50%);width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;border-top:6px solid var(--muted);} .dropdown.open .dropdown-toggle::after{border-top-color: var(--primary);} .dropdown-menu{position:absolute;z-index:10000;top:calc(100% + 6px);left:0;background: #101427;border:1px solid rgba(255,255,255,0.18);border-radius:10px;box-shadow: var(--shadow);padding:6px;min-width:160px;display:none;} .dropdown.open .dropdown-menu{display:block;} .dropdown-menu [role='option']{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:8px;cursor:pointer;} .dropdown-menu [role='option'][aria-selected='true'], .dropdown-menu [role='option']:hover{background: rgba(255,255,255,0.08);} .dot{width:8px;height:8px;border-radius:50%;display:inline-block;} .dot.high{background:#f87171;} .dot.medium{background:#fbbf24;} .dot.low{background:#7dd3fc;} #priority{display:none;}";
+  injectCss(css);
+  function getPriority(){ var dd=document.getElementById('priorityDd'); return dd ? (dd.dataset.value||'medium') : (document.getElementById('priority')?document.getElementById('priority').value:'medium'); }
+  function setPriority(val){
+    var dd=document.getElementById('priorityDd'); if(!dd) return;
+    dd.dataset.value = val;
+    var labelMap = {high:'\u9ad8', medium:'\u4e2d', low:'\u4f4e'};
+    var labEl = dd.querySelector('[data-label]'); if(labEl) labEl.textContent = '\u4f18\u5148\u7ea7\uff1a' + (labelMap[val]||'\u4e2d');
+    dd.querySelectorAll('[role="option"]').forEach(function(li){ li.setAttribute('aria-selected', li.dataset.value===val ? 'true' : 'false'); });
+  }
+  function initPriorityDropdown(){
+    var sel = document.getElementById('priority'); if(!sel) return;
+    // build dropdown
+    var dd = document.createElement('div'); dd.className='dropdown'; dd.id='priorityDd'; dd.dataset.value = sel.value || 'medium';
+    var btn = document.createElement('button'); btn.type='button'; btn.className='dropdown-toggle'; btn.setAttribute('aria-haspopup','listbox'); btn.setAttribute('aria-expanded','false');
+    var span = document.createElement('span'); span.setAttribute('data-label',''); btn.appendChild(span);
+    var menu = document.createElement('ul'); menu.className='dropdown-menu'; menu.setAttribute('role','listbox');
+    function makeOpt(value, label, dot){ var li=document.createElement('li'); li.setAttribute('role','option'); li.dataset.value=value; var d=document.createElement('span'); d.className='dot '+dot; li.appendChild(d); li.appendChild(document.createTextNode(' '+label)); return li; }
+    var optH = makeOpt('high','\u9ad8','high');
+    var optM = makeOpt('medium','\u4e2d','medium'); optM.setAttribute('aria-selected','true');
+    var optL = makeOpt('low','\u4f4e','low');
+    menu.appendChild(optH); menu.appendChild(optM); menu.appendChild(optL);
+    dd.appendChild(btn); dd.appendChild(menu);
+    sel.insertAdjacentElement('afterend', dd);
+    function open(){ dd.classList.add('open'); btn.setAttribute('aria-expanded','true'); }
+    function close(){ dd.classList.remove('open'); btn.setAttribute('aria-expanded','false'); }
+    btn.addEventListener('click', function(){ dd.classList.contains('open') ? close() : open(); });
+    menu.querySelectorAll('[role="option"]').forEach(function(li){ li.addEventListener('click', function(){ setPriority(li.dataset.value); close(); }); });
+    document.addEventListener('click', function(e){ if(!dd.contains(e.target)) close(); });
+    document.addEventListener('keydown', function(e){ if(e.key==='Escape') close(); });
+    // init label
+    setPriority(dd.dataset.value || 'medium');
+  }
+  window.getPriority = getPriority;
+  // auto init on load
+  initPriorityDropdown();
+})();</script>
+<script>
+(function(){
+  try{
+    var muted = document.querySelector('.muted');
+    if(muted){ muted.textContent = 'AI需求生成器，帮助你更好的给AI提出需求'; }
+  }catch(e){}
+
+  // override toMarkdown to use full priority labels
+  window.toMarkdown = function(items){
+    function escapeMd(s){ return String(s).replace(/[\\`*_\[\]<>|]/g, '\\$&'); }
+    var total = items.length; var done = items.filter(function(i){return i.done;}).length;
+    var header = '# 需求清单\n\n完成下方的任务，完成后按照每个任务给我列出几条我可以改进的内容方案供我选择\n\n共 ' + total + ' 条 ｜ 已完成 ' + done + '\n\n';
+    var lines = items.map(function(i){
+      var box = i.done ? 'x' : ' ';
+      var pri = i.priority==='high'?'[高优先级]':i.priority==='low'?'[低优先级]':'[中优先级]';
+      var tag = i.tag ? (' #'+escapeMd(i.tag)) : '';
+      return '- ['+box+'] ' + escapeMd(i.text) + tag + ' ' + pri;
+    });
+    return header + lines.join('\n') + '\n';
+  };
+
+  // helper to set priority UI without access to internal setPriority
+  function setPriorityUI(val){
+    var dd = document.getElementById('priorityDd');
+    if(!dd){ var sel=document.getElementById('priority'); if(sel) sel.value = val; return; }
+    dd.dataset.value = val;
+    var labelMap = {high:'高', medium:'中', low:'低'};
+    var labEl = dd.querySelector('[data-label]'); if(labEl) labEl.textContent = '优先级：' + (labelMap[val]||'中');
+    dd.querySelectorAll('[role="option"]').forEach(function(li){ li.setAttribute('aria-selected', li.dataset.value===val ? 'true' : 'false'); });
+  }
+
+  window.setEditMode = function(on){
+    var btn = document.getElementById('add');
+    if(!btn) return;
+    btn.textContent = on ? '保存修改' : '添加需求';
+  };
+
+  // make clicking edit open composer with values
+  window.editItem = function(id){
+    var idx = state.items.findIndex(function(x){return x.id===id;});
+    if(idx<0) return;
+    var current = state.items[idx];
+    state.editingId = id;
+    document.getElementById('text').value = current.text || '';
+    document.getElementById('tag').value = current.tag || '';
+    setPriorityUI(current.priority || 'medium');
+    window.setEditMode(true);
+    document.getElementById('text').focus();
+  };
+
+  // intercept Add when editing so it saves instead of adding
+  var addBtn = document.getElementById('add');
+  if(addBtn){
+    addBtn.addEventListener('click', function(e){
+      if(state.editingId){
+        e.stopImmediatePropagation(); e.stopPropagation(); e.preventDefault();
+        var text = document.getElementById('text').value.trim();
+        if(!text) return;
+        var tag = document.getElementById('tag').value.trim();
+        var priority = (window.getPriority && window.getPriority()) || 'medium';
+        var idx = state.items.findIndex(function(x){return x.id===state.editingId;});
+        if(idx>=0){
+          var cur = state.items[idx];
+          state.items[idx] = Object.assign({}, cur, { text: text, tag: tag, priority: priority });
+        }
+        state.editingId = null;
+        window.setEditMode(false);
+        document.getElementById('text').value=''; document.getElementById('tag').value='';
+        try{ updateCounter(); }catch(_){}
+        try{ save(); }catch(_){}
+        try{ render(); }catch(_){}
+        document.getElementById('text').focus();
+      }
+    }, true);
+  }
+
+  try{ updatePreview && updatePreview(); }catch(_){ }
+})();
+</script>
+<script>
+(function(){
+  // Add a quick-delete-completed button
+  try{
+    var bar = document.querySelector('.toolbar');
+    if(bar && !document.getElementById('fastClearDone')){
+      var btn = document.createElement('button');
+      btn.className = 'btn ghost';
+      btn.id = 'fastClearDone';
+      btn.textContent = '快速删除已完成';
+      btn.title = '快速删除已完成需求';
+      btn.addEventListener('click', function(){ try{ clearDone(); }catch(e){} });
+      bar.appendChild(btn);
+    }
+  }catch(e){}
+
+  // Override toMarkdown: add instruction under the title
+  window.toMarkdown = function(items){
+    function escapeMd(s){ return String(s).replace(/[\\`*_\[\]<>|]/g, '\\$&'); }
+    var total = items.length; var done = items.filter(function(i){return i.done;}).length;
+    var tip = '完成下方的任务，完成后按照每个任务给我列出几条我可以改进的内容方案供我选择';
+    var header = '# 需求清单\n\n完成下方的任务，完成后按照每个任务给我列出几条我可以改进的内容方案供我选择\n\n' + tip + '\n\n' + '共 ' + total + ' 条 ｜ 已完成 ' + done + '\n\n';
+    var lines = items.map(function(i){
+      var box = i.done ? 'x' : ' ';
+      var pri = i.priority==='high'?'[高优先级]':i.priority==='low'?'[低优先级]':'[中优先级]';
+      var tag = i.tag ? (' #'+escapeMd(i.tag)) : '';
+      return '- ['+box+'] ' + escapeMd(i.text) + tag + ' ' + pri;
+    });
+    return header + lines.join('\n') + '\n';
+  };
+
+  // Override export filename
+  window.exportMarkdown = function(){
+    var md = window.toMarkdown ? window.toMarkdown(state.items) : '';
+    var blob = new Blob([md], {type:'text/markdown;charset=utf-8'});
+    var a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = '需求文档.md'; a.click(); URL.revokeObjectURL(a.href);
+  };
+  try{ if(typeof updatePreview==='function') updatePreview(); }catch(_){}
+})();
+</script>
+<script>
+(function(){
+  // Override toMarkdown to include involved files sublist
+  window.toMarkdown = function(items){
+    function escapeMd(s){ return String(s).replace(/[\\`*_\[\]<>|]/g, '\\$&'); }
+    var total = items.length; var done = items.filter(function(i){return i.done;}).length;
+    var header = '# 需求清单\n\n完成下方的任务，完成后按照每个任务给我列出几条我可以改进的内容方案供我选择\n\n' + '共 ' + total + ' 条 ｜ 已完成 ' + done + '\n\n';
+    var lines = [];
+    items.forEach(function(i){
+      var box = i.done ? 'x' : ' ';
+      var pri = i.priority==='high'?'[高优先级]':i.priority==='low'?'[低优先级]':'[中优先级]';
+      var tag = i.tag ? (' #'+escapeMd(i.tag)) : '';
+      lines.push('- ['+box+'] ' + escapeMd(i.text) + tag + ' ' + pri);
+      if (Array.isArray(i.files) && i.files.length) {
+        i.files.forEach(function(f){ lines.push('  - 涉及文件: ' + escapeMd(f)); });
+      }
+    });
+    return header + lines.join('\n') + '\n';
+  };
+  try{ if(typeof updatePreview==='function') updatePreview(); }catch(_){}
+})();
+</script>
+<script>
+(function(){
+  // 定义清除所有需求的方法（若不存在）
+  if (typeof window.clearAll !== 'function') {
+    window.clearAll = function(){
+      try { state.items = []; save(); render(); } catch(e) {}
+    };
+  }
+
+  // 将“快速删除已完成”按钮替换为“清除所有”
+  try{
+    var bar = document.querySelector('.toolbar');
+    var fast = document.getElementById('fastClearDone');
+    var clearAllBtn = document.getElementById('clearAll');
+    if (bar && !clearAllBtn) {
+      var btn = fast || document.createElement('button');
+      btn.className = 'btn ghost';
+      btn.id = 'clearAll';
+      btn.textContent = '清除所有';
+      btn.title = '清除所有需求';
+      // 通过克隆节点移除旧的点击事件监听，再绑定新的
+      var clone = btn.cloneNode(true);
+      clone.addEventListener('click', function(){ try{ window.clearAll(); }catch(e){} });
+      if (fast) {
+        bar.replaceChild(clone, fast);
+      } else {
+        bar.appendChild(clone);
+      }
+    }
+  }catch(e){}
+})();
+</script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
