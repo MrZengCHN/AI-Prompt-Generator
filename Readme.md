@@ -2,7 +2,7 @@
 
 本应用为单页纯前端工具，文件为 `AI提示词生成器.html`。无需安装依赖，双击用浏览器打开即可使用，或点击下方GitHub Page 使用。它帮助你把分散的想法/需求整理为结构化清单，支持优先级、标签、相关文件、拖拽排序，并可一键导出/复制 Markdown。
 
-GitHub Page : [AI提示词生成器.html](https://github.com/MrZengCHN/AI-Prompt-Generator/blob/main/AI提示词生成器.html)
+GitHub Page : [AI提示词生成器.html](https://mrzengchn.github.io/AI-Prompt-Generator/AI%E6%8F%90%E7%A4%BA%E8%AF%8D%E7%94%9F%E6%88%90%E5%99%A8.html)
 
 ## 打开方式
 - 直接双击 `AI提示词生成器.html`，或在浏览器中使用 “打开文件” 选择该文件。
