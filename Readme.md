@@ -1,75 +1,15 @@
-﻿# AI 提示词生成器 使用说明
+﻿# Instructions for Using the AI Prompt Generator
 
-本应用为单页纯前端工具，文件为 `AI提示词生成器.html`。无需安装依赖，双击用浏览器打开即可使用，或点击下方GitHub Page 使用。它帮助你把分散的想法/需求整理为结构化清单，支持优先级、标签、相关文件、拖拽排序，并可一键导出/复制 Markdown。
+Click on the GitHub Page below to use it. It helps you organize scattered ideas/requirements into structured checklists, supports prioritization, tags, related files, drag-and-drop sorting, and allows one-click export/copy to Markdown.
 
-GitHub Page : [AI提示词生成器.html](https://mrzengchn.github.io/AI-Prompt-Generator/)
+GitHub Page : [AI-Prompt-Generator](https://mrzengchn.github.io/AI-Prompt-Generator/)
 
-## 打开方式
-- 直接双击 `AI提示词生成器.html`，或在浏览器中使用 “打开文件” 选择该文件。
-- 推荐使用现代浏览器（Edge/Chrome/Firefox）。数据保存在本机浏览器的 LocalStorage 中，无需联网。
 
-## 界面组成
-- 输入区（顶部卡片）：
-  - 文本框：输入一条提示词/需求描述，支持多行，右下角显示字数；`Ctrl/Cmd + Enter` 快速添加。
-  - 优先级：高/中/低（自定义下拉菜单，默认“中”）。
-  - 标签：可选，例如 `UI`、`API` 等。
-  - 添加按钮：将当前内容加入清单。
-- 工具栏：
-  - 搜索框：按内容、标签、涉及文件实时过滤清单。
-  - 导出 Markdown：下载为 `requirements.md` 文件。
-  - 复制 Markdown：复制当前清单的 Markdown 文本。
-  - 清除已完成：一键删除已完成的条目（必要时可能出现“清空全部”按钮）。
-- 清单区（左侧）：
-  - 每条包含：优先级徽标、标签、内容、完成勾选框、置顶/置底、编辑、删除。
-  - 相关文件：在条目下方的输入框回车添加（如 `src/app.ts`、`/api/users`），可单独移除。
-  - 支持拖拽排序：按住条目可上下调整顺序；也可用“置顶/置底”按钮。
-  - 双击内容可快速编辑。
-- 预览区（右侧）：
-  - 实时显示 Markdown 预览（纯文本形式）。
-  - 复制预览：将预览面板内容复制到剪贴板。
 
-## 基本操作
-1) 在顶部文本框里输入一条提示词/需求描述。
-2) 选择“优先级”（高/中/低），可选填“标签”。
-3) 点击“添加”或按 `Ctrl/Cmd + Enter` 加入清单。
-4) 在条目下方“涉及文件/路径”框中按回车可逐个添加关联文件（可选）。
-5) 勾选“完成”可标记条目完成；点击“编辑/删除/置顶/置底”进行管理；拖拽条目可调整顺序。
-6) 使用上方搜索框按关键词/标签/文件过滤条目。
+------
 
-## Markdown 导出/复制
-- 清单会被转换为勾选列表，示例：
-  ```markdown
-  # 需求清单
-  
-  文件编码：UTF-8
-  
-  完成下方的任务，完成后按照每个任务给我列出几条我可以改进的内容方案供我选择
-  
-  共 2 条 ｜ 已完成 0
-  
-  - [ ] 新增自定义提示内容输入框 #UI修改 [高优先级]
-    - 涉及文件: AI-Prompt-Generator\\AI提示词生成器.html
-  - [ ] 自定义提示框输入内容，将输入的内容追加到Markdown中。 #功能实现 [中优先级]
-  
-  ```
-- “导出 Markdown”：下载为 `requirements.md`。
-- “复制 Markdown”：复制上述文本；“复制预览”：复制右侧预览面板内容。
+# AI提示生成器使用指南
 
-## 数据存储与隐私
-- 所有数据仅存储在当前浏览器的 LocalStorage，键：`requirements:v1`。
-- 关闭页面不会丢失数据；清除浏览器站点数据或更换浏览器/设备会导致数据不可用。
+点击下方GitHub页面即可使用。该工具能帮助您将零散的想法/需求整理成结构化的清单，支持优先级设定、标签分类、相关文件关联、拖拽排序功能，并可一键导出或复制为Markdown格式。
 
-## 快捷键
-- `Ctrl/Cmd + Enter`：快速添加当前输入为一条条目。
-- `Enter`（在条目“涉及文件”输入框内）：添加该文件为当前条目的关联文件。
-- `Esc`：在优先级下拉打开时可关闭。
-
-## 常见问题
-- 看不到中文/出现乱码：请确认以 UTF-8 打开文件；使用现代浏览器。
-- 按钮无响应：尝试刷新页面；浏览器需允许剪贴板写入以完成“复制”。
-- 如何迁移数据：在原浏览器点击“复制 Markdown”导出文本，在新环境重新整理或粘贴保存。
-
-## 兼容性
-- 现代桌面浏览器均可。移动端可打开但不保证完整拖拽与复制体验。
-
-祝使用愉快！如果需要把术语从“需求”改为“提示词”，可直接在输入时使用你的领域语言；导出的 Markdown 同样适合作为模型提示词素材清单。
+GitHub页面：[AI提示生成器](https://mrzengchn.github.io/AI-Prompt-Generator/)
