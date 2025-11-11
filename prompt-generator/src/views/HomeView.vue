@@ -98,7 +98,7 @@ const deleteItem = (idx) => items.value.splice(idx, 1)
 
 <template>
   <div class="container mx-auto p-4 max-w-7xl">
-    <div class="card bg-base-100 shadow-xl mb-4">
+    <div class="card bg-base-100 shadow mb-4 transition-all duration-100 hover:shadow-2xl">
       <div class="card-body">
         <textarea v-model="newItem.text" @keydown.ctrl.enter="addItem" @keydown.meta.enter="addItem" :placeholder="t('home.inputPlaceholder')" class="textarea textarea-bordered w-full" rows="3"></textarea>
         <div class="flex gap-2 mt-2">
@@ -124,7 +124,7 @@ const deleteItem = (idx) => items.value.splice(idx, 1)
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
       <draggable v-model="items" item-key="id" class="space-y-2">
         <template #item="{element: item, index: idx}">
-          <div class="card bg-base-100 shadow cursor-move">
+          <div class="card bg-base-100 shadow cursor-move transition-all duration-100 hover:shadow-xl">
             <div class="card-body p-4">
               <div class="flex items-start gap-2">
                 <input type="checkbox" v-model="item.completed" class="checkbox" />
@@ -156,7 +156,7 @@ const deleteItem = (idx) => items.value.splice(idx, 1)
         </template>
       </draggable>
 
-      <div class="card bg-base-100 shadow-xl sticky top-4">
+      <div class="card bg-base-100 shadow-xl sticky top-4 transition-all duration-100 hover:shadow-2xl">
         <div class="card-body">
           <div class="flex justify-between items-center mb-2">
             <h3 class="card-title">{{ t('home.preview') }}</h3>
