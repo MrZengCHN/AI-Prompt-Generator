@@ -18,13 +18,16 @@ const messages = {
       clearAll: '清除所有',
       preview: '预览',
       encoding: '文件编码',
-      customPrompt: '自定义提示词',
+      customPrompt: '提示词',
       filePlaceholder: '涉及文件',
       priority: { high: '高', medium: '中', low: '低' },
       mdHeader: '需求清单',
       mdEncoding: '文件编码：UTF-8',
       mdInstruction: '完成下方的任务，完成后按照每个任务给我列出几条我可以改进的内容方案供我选择',
-      mdStats: '共 {total} 条 ｜ 已完成 {completed}'
+      mdStats: '共 {total} 条 ｜ 已完成 {completed}',
+      mdStatsNoCompleted: '共 {total} 条',
+      useMcp: '使用 MCP',
+      toggles: '配置开关'
     },
     about: {
       title: '功能介绍',
@@ -67,13 +70,16 @@ const messages = {
       clearAll: '清除所有',
       preview: '預覽',
       encoding: '文件編碼',
-      customPrompt: '自定義提示詞',
+      customPrompt: '提示詞',
       filePlaceholder: '涉及文件',
       priority: { high: '高', medium: '中', low: '低' },
       mdHeader: '需求清單',
       mdEncoding: '文件編碼：UTF-8',
       mdInstruction: '完成下方的任務，完成後按照每個任務給我列出幾條我可以改進的內容方案供我選擇',
-      mdStats: '共 {total} 條 ｜ 已完成 {completed}'
+      mdStats: '共 {total} 條 ｜ 已完成 {completed}',
+      mdStatsNoCompleted: '共 {total} 條',
+      useMcp: '使用 MCP',
+      toggles: '配置開關'
     },
     about: {
       title: '功能介紹',
@@ -116,13 +122,16 @@ const messages = {
       clearAll: 'Clear All',
       preview: 'Preview',
       encoding: 'File Encoding',
-      customPrompt: 'Custom Prompt',
+      customPrompt: 'Prompt',
       filePlaceholder: 'Related files',
       priority: { high: 'High', medium: 'Medium', low: 'Low' },
       mdHeader: 'Requirements Checklist',
       mdEncoding: 'File Encoding: UTF-8',
       mdInstruction: 'Complete the tasks below, then provide several improvement suggestions for each task',
-      mdStats: 'Total {total} | Completed {completed}'
+      mdStats: 'Total {total} | Completed {completed}',
+      mdStatsNoCompleted: 'Total {total}',
+      useMcp: 'Use MCP',
+      toggles: 'Toggles'
     },
     about: {
       title: 'Features',

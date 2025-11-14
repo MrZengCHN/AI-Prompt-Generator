@@ -41,3 +41,5 @@ When modifying page content, consider i18n internationalization to ensure synchr
 
 Please declare any changes to the project architecture in CLAUDE.md.
 Keep the content in CLAUDE.md concise, accurate, and comprehensive.
+
+Please keep the README.md up to date when there are functional changes.
