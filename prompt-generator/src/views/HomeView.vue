@@ -68,7 +68,7 @@ const filteredItems = computed(() => {
 const markdown = computed(() => {
   const completed = items.value.filter(i => i.completed).length
   const instruction = customPrompt.value || t('home.mdInstruction')
-  let md = `# ${t('home.mdHeader')}\n\n${locale.value === 'en' ? 'File Encoding' : '文件编码'}：${encoding.value}\n\n${instruction}\n\n${t('home.mdStats', { total: items.value.length, completed })}\n\n`
+  let md = `# ${t('home.mdHeader')}\n\n${locale.value === 'en' ? 'Encoding Format Used in Project' : locale.value === 'zh-TW' ? '項目所使用的編碼格式' : '项目所使用的编码格式'}：${encoding.value}\n\n${instruction}\n\n${t('home.mdStats', { total: items.value.length, completed })}\n\n`
   items.value.forEach(item => {
     const check = item.completed ? 'x' : ' '
     const tags = item.tags.length ? ' #' + item.tags.join(' #') : ''
