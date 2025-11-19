@@ -165,9 +165,9 @@ const removeMcp = (mcp) => {
             <div class="card-body p-4">
               <div class="flex items-start gap-2">
                 <input type="checkbox" v-model="item.completed" class="checkbox" />
-                <div class="flex-1">
+                <div class="flex-1 min-w-0">
                   <div v-if="!item.editing" @dblclick="item.editing = true" class="cursor-pointer">
-                    <span :class="{'line-through': item.completed}">{{ item.text }}</span>
+                    <span class="break-words whitespace-pre-wrap" :class="{'line-through': item.completed}">{{ item.text }}</span>
                     <div class="flex gap-1 mt-1">
                       <span class="badge" :class="{'badge-error': item.priority === 'high', 'badge-warning': item.priority === 'medium', 'badge-info': item.priority === 'low'}">{{ t(`home.priority.${item.priority}`) }}</span>
                       <span v-for="tag in item.tags" :key="tag" class="badge badge-outline">{{ tag }}</span>
@@ -260,7 +260,7 @@ const removeMcp = (mcp) => {
               </div>
             </div>
           </fieldset>
-          <pre class="whitespace-pre-wrap text-sm bg-base-200 p-4 rounded">{{ markdown }}</pre>
+          <pre class="whitespace-pre-wrap break-words text-sm bg-base-200 p-4 rounded">{{ markdown }}</pre>
         </div>
       </div>
     </div>
